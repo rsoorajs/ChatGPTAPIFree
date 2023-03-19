@@ -28,11 +28,11 @@ app.use((err, req, res, next) => {
   next();
 });
 
-const handleOptions = (req, res) => {
+app.options('/v1/', (req, res) => {
   res.setHeader('Access-Control-Max-Age', '1728000').set(corsHeaders).sendStatus(204);
-};
+});
 
-const handlePost = async (req, res) => {
+app.post('/v1/', async (req, res) => {
   const contentType = req.headers['content-type'];
   if (!contentType || contentType !== 'application/json') {
     return res.status(415).set(corsHeaders).type('text/plain').send("Unsupported media type. Use 'application/json' content type");
@@ -88,12 +88,7 @@ const handlePost = async (req, res) => {
   } catch (error) {
     res.status(500).set(corsHeaders).type('text/plain').send(error.message);
   }
-};
-
-app.options('/v1/', handleOptions);
-app.post('/v1/', handlePost);
-app.options('/v1/chat/completions', handleOptions);
-app.post('/v1/chat/completions', handlePost);
+});
 
 app.use('*', (req, res) => {
   res.status(404).set(corsHeaders).type('text/plain').send('Not found');
